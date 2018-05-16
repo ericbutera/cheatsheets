@@ -90,5 +90,3 @@ Poll.objects.get(
 # SELECT * from polls WHERE question LIKE 'Who%'
 #    AND (pub_date = '2005-05-02' OR pub_date = '2005-05-06')
 ```
-
-### [Queries](https://docs.djangoproject.com/en/1.11/topics/db/queries/)

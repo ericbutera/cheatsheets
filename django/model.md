@@ -1,5 +1,5 @@
 ---
-title: Django Models
+title: Models
 ---
 
 # [Models](https://docs.djangoproject.com/en/1.11/topics/db/models/)
@@ -26,6 +26,7 @@ Field(editable=False)   # hide from admin or any ModelForm, skip validation
 Field(help_text='Field Documentation')
 Field(primary_key=True) # use this to specific custom pk field
 Field(unique=True)      # unique value
+Field(verbose_name='')  # human readable name for field
 
 FRESHMAN = 'FR'
 SOPHOMORE = 'SO'
@@ -73,4 +74,85 @@ TextField()
 TimeField(auto_now=False, auto_now_add=False, ...)
 URLField(max_length=200, ...)
 UUIDField()
+```
+
+### [Relationships](https://docs.djangoproject.com/en/1.11/topics/db/models/#relationships)
+
+#### [Many-to-one relationships](https://docs.djangoproject.com/en/1.11/topics/db/models/#many-to-one-relationships)
+```python
+class Manufacturer(models.Model):
+    pass
+
+class Car(models.Model):
+    manufacturer = models.ForeignKey(Manufacturer, on_delete=models.CASCADE)
+```
+
+#### [Many-to-many relationships](https://docs.djangoproject.com/en/1.11/topics/db/models/#many-to-many-relationships)
+```python
+ Topping(models.Model):
+    pass
+
+class Pizza(models.Model):
+    toppings = models.ManyToManyField(Topping)
+```
+
+#### [Extra fields on many-to-many relationships](https://docs.djangoproject.com/en/1.11/topics/db/models/#extra-fields-on-many-to-many-relationships)
+```python
+class Person(models.Model):
+    name = models.CharField(max_length=128)
+
+class Group(models.Model):
+    name = models.CharField(max_length=128)
+    members = models.ManyToManyField(Person, through='Membership')
+
+class Membership(models.Model):
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    date_joined = models.DateField()
+    invite_reason = models.CharField(max_length=64)
+```
+
+### [Meta](https://docs.djangoproject.com/en/1.11/topics/db/models/#meta-options)
+```python
+class Ox(models.Model):
+    horn_length = models.IntegerField()
+
+    class Meta:
+        ordering = ["horn_length"]
+        verbose_name_plural = "oxen"
+
+
+# Meta inheritance
+class CommonInfo(models.Model):
+    class Meta:
+        abstract = True
+        ordering = ['name']
+
+class Student(CommonInfo):
+    class Meta(CommonInfo.Meta):
+        db_table = 'student_info'
+```
+
+
+### Examples
+```python
+class Blog(models.Model):
+    name = models.CharField(max_length=100)
+    tagline = models.TextField()
+
+class Author(models.Model):
+    name = models.CharField(max_length=200)
+    email = models.EmailField()
+
+class Entry(models.Model):
+    blog = models.ForeignKey(Blog, on_delete=models.CASCADE)
+    headline = models.CharField(max_length=255)
+    body_text = models.TextField()
+    pub_date = models.DateField()
+    mod_date = models.DateField()
+    authors = models.ManyToManyField(Author)
+    n_comments = models.IntegerField()
+    n_pingbacks = models.IntegerField()
+    rating = models.IntegerField()
+
 ```
